@@ -4,11 +4,16 @@ import { Product } from '../../components';
 
 import { client, urlFor } from '../../lib/client';
 
+import { useStateContext } from '../../context/StateContext';
+
 
 const ProductDetails = ({ product, products }) => {
 
     const { image, name, details, price } = product;
     const [index, setIndex] = useState(0);
+
+    const { decQty, incQty, qty, onAdd, setShowCart } = useStateContext();
+
 
     return (
         <div>
@@ -45,17 +50,17 @@ const ProductDetails = ({ product, products }) => {
                     </div>
                     <h4>Details: </h4>
                     <p>{details}</p>
-                    <p className="price">${price}</p>
+                    <p className="price">₹{price}</p>
                     <div className="quantity">
                         <h3>Quantity:</h3>
                         <p className="quantity-desc">
-                            <span className="minus" onClick=''><AiOutlineMinus /></span>
-                            <span className="num">0</span>
-                            <span className="plus" onClick=""><AiOutlinePlus /></span>
+                            <span className="minus" onClick={decQty}><AiOutlineMinus /></span>
+                            <span className="num">{qty}</span>
+                            <span className="plus" onClick={incQty}><AiOutlinePlus /></span>
                         </p>
                     </div>
                     <div className="buttons">
-                        <button type="button" className="add-to-cart" onClick="">Add to Cart</button>
+                        <button type="button" className="add-to-cart" onClick={() => onAdd(product, qty)}>Add to Cart</button>
                         <button type="button" className="buy-now" onClick="">Buy Now</button>
                     </div>
                 </div>
@@ -108,7 +113,7 @@ export const getStaticProps = async ({ params: { slug }}) => {
     const product = await client.fetch(query);
     const products = await client.fetch(productsQuery);
 
-    console.log(product);
+    
 
     return {
         props: { products, product }
